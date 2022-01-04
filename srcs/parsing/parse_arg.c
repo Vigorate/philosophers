@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 12:31:30 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/04 16:24:31 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/04 18:02:20 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ void	allocate_forks(t_pgen *data)
 	int	i;
 
 	i = 0;
-	data->forks = malloc(sizeof(pthread_mutex_t) * data->nbr_of_philo);
-	data->timestamp = malloc(sizeof(pthread_mutex_t) * data->nbr_of_philo);
-	data->eating = malloc(sizeof(pthread_mutex_t) * data->nbr_of_philo);
+//	data->forks = malloc(sizeof(pthread_mutex_t) * data->nbr_of_philo);
+//	data->timestamp = malloc(sizeof(pthread_mutex_t) * data->nbr_of_philo);
+//	data->eating = malloc(sizeof(pthread_mutex_t) * data->nbr_of_philo);
 	while (i < data->nbr_of_philo)
 	{
 		if (pthread_mutex_init(&(data->forks[i]), NULL))

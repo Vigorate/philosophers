@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:42:46 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/04 17:48:39 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/04 20:33:59 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,15 +16,13 @@ void	dispatch_forks(t_pdata *pdata, t_pgen *data, int i)
 {
 	if (!i)
 	{
-		printf("philo : %d get right %d and left %d forks\n", i, i, data->nbr_of_philo - 1);
-		pdata->right = data->forks[i];
-		pdata->left = data->forks[data->nbr_of_philo - 1];
+		pdata->right = i;
+		pdata->left = data->nbr_of_philo - 1;
 	}
 	else
 	{
-		printf("philo : %d get right %d and left %d forks\n", i, i, i - 1);
-		pdata->right = data->forks[i];
-		pdata->left = data->forks[i - 1];
+		pdata->right = i;
+		pdata->left = i - 1;
 	}
 }
 
@@ -51,8 +49,10 @@ t_pdata	*allocate_philo_data(t_pgen *data, int i)
 void	death_loop(t_pgen *data, t_pdata **pdata)
 {
 	int	i;
+	long int	start_time;
 
 	i = 0;
+	start_time = get_elapsed_time();
 	while(1)
 	{
 		pthread_mutex_lock(&((pdata[i])->eating));
@@ -62,16 +62,14 @@ void	death_loop(t_pgen *data, t_pdata **pdata)
 			++i;
 			continue ;
 		}
-		pthread_mutex_lock(&(data->time));
 		pthread_mutex_lock(&((pdata[i])->timestamp));
-		if (get_elapsed_time() - pdata[i]->time_stamp > data->time_to_die)
+		if (start_time - get_elapsed_time() - pdata[i]->time_stamp > data->time_to_die)
 		{
 			pthread_mutex_lock(&(data->display));
-			printf("%ld %d died\n", get_elapsed_time(), i + 1);
+			printf("%ld %d died\n", start_time - get_elapsed_time(), i + 1);
 //			deallocate_structures(data, pdata);
 			return ;
 		}
-		pthread_mutex_unlock(&(data->time));
 		pthread_mutex_unlock(&((pdata[i])->timestamp));
 		++i;
 		if (i == data->nbr_of_philo)
@@ -84,18 +82,22 @@ int	dispatch_thread(t_pgen *data)
 	pthread_t threads[data->nbr_of_philo];
 	int		i;
 	t_pdata	*pdata[data->nbr_of_philo];
+	long int	start_time;
 
 	i = 0;
 	while (i < data->nbr_of_philo)
 	{
 		pdata[i] = allocate_philo_data(data, i);
+		pdata[i]->gen = data;
 		if (!pdata[i])
 			return (1);
 		++i;
 	}
 	i = 0;
+	start_time = get_elapsed_time();
 	while (i < data->nbr_of_philo)
 	{
+		pdata[i]->start_time = start_time;
 		pthread_create(&(threads[i]), NULL, philo_job, pdata[i]);
 		++i;
 	}
