@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:42:46 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/04 15:55:08 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/04 17:48:39 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,12 +16,13 @@ void	dispatch_forks(t_pdata *pdata, t_pgen *data, int i)
 {
 	if (!i)
 	{
-		printf("philo : %d get %d and %d forks\n", i, i, data->nbr_of_philo - 1);
+		printf("philo : %d get right %d and left %d forks\n", i, i, data->nbr_of_philo - 1);
 		pdata->right = data->forks[i];
 		pdata->left = data->forks[data->nbr_of_philo - 1];
 	}
 	else
 	{
+		printf("philo : %d get right %d and left %d forks\n", i, i, i - 1);
 		pdata->right = data->forks[i];
 		pdata->left = data->forks[i - 1];
 	}
@@ -41,6 +42,8 @@ t_pdata	*allocate_philo_data(t_pgen *data, int i)
 	pdata->time_to_eat = data->time_to_eat;
 	pdata->time_to_sleep = data->time_to_sleep;
 	pdata->timestamp = data->timestamp[i];
+	pdata->eating = data->eating[i];
+	pdata->is_eating = 0;
 	dispatch_forks(pdata, data, i);
 	return (pdata);
 }
@@ -52,17 +55,24 @@ void	death_loop(t_pgen *data, t_pdata **pdata)
 	i = 0;
 	while(1)
 	{
+		pthread_mutex_lock(&((pdata[i])->eating));
+		if (pdata[i]->is_eating)
+		{
+			pthread_mutex_unlock(&((pdata[i])->eating));
+			++i;
+			continue ;
+		}
+		pthread_mutex_lock(&(data->time));
 		pthread_mutex_lock(&((pdata[i])->timestamp));
-//		pthread_mutex_lock(&(data->time));
 		if (get_elapsed_time() - pdata[i]->time_stamp > data->time_to_die)
 		{
 			pthread_mutex_lock(&(data->display));
 			printf("%ld %d died\n", get_elapsed_time(), i + 1);
-			deallocate_structures(data, pdata);
+//			deallocate_structures(data, pdata);
 			return ;
 		}
+		pthread_mutex_unlock(&(data->time));
 		pthread_mutex_unlock(&((pdata[i])->timestamp));
-//		pthread_mutex_unlock(&(data->time));
 		++i;
 		if (i == data->nbr_of_philo)
 			i = 0;
@@ -79,7 +89,7 @@ int	dispatch_thread(t_pgen *data)
 	while (i < data->nbr_of_philo)
 	{
 		pdata[i] = allocate_philo_data(data, i);
-		if (!pdata)
+		if (!pdata[i])
 			return (1);
 		++i;
 	}
@@ -89,12 +99,12 @@ int	dispatch_thread(t_pgen *data)
 		pthread_create(&(threads[i]), NULL, philo_job, pdata[i]);
 		++i;
 	}
-	i = 0;
 //	while (i < data->nbr_of_philo + 1)
 //	{
 //		pthread_join(&(threads[i]), NULL);
 //		++i;
 //	}
+
 	death_loop(data, pdata);
 	// Loop on mutexed value of philo elasped time since last action
 	// Return on detected philo death

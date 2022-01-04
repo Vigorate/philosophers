@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_arg.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ambelkac <ambelkac@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 12:31:30 by ambelkac          #+#    #+#             */
-/*   Updated: 2021/12/04 16:10:45 by ambelkac         ###   ########.fr       */
+/*   Updated: 2022/01/04 16:24:31 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,11 +19,14 @@ void	allocate_forks(t_pgen *data)
 	i = 0;
 	data->forks = malloc(sizeof(pthread_mutex_t) * data->nbr_of_philo);
 	data->timestamp = malloc(sizeof(pthread_mutex_t) * data->nbr_of_philo);
+	data->eating = malloc(sizeof(pthread_mutex_t) * data->nbr_of_philo);
 	while (i < data->nbr_of_philo)
 	{
 		if (pthread_mutex_init(&(data->forks[i]), NULL))
 			return ;
 		if (pthread_mutex_init(&(data->timestamp[i]), NULL))
+			return ;
+		if (pthread_mutex_init(&(data->eating[i]), NULL))
 			return ;
 		++i;
 	}
@@ -42,6 +45,7 @@ int	fill_general_data(char **av, int ac, t_pgen *data)
 	else
 		data->must_eat = -1;
 	allocate_forks(data);
+	return (0);
 }
 
 int	is_arg_only_numbers(char **av, int ac)

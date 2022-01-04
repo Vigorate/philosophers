@@ -21,3 +21,12 @@ Try to deduce if each philo will survive the next step then custom sleep
 for the calculated time of death, lock display mutex and return
 
 NOTES :
+
+
+During death loop, check the value of must eat for each philo
+And if the value is reached stop all thread
+
+Make a mutex for checking if the philo is currently eating
+If you can lock the mutex it means that he is not eating
+
+All mutexes should be unlocked when quitting

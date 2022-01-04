@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 12:33:18 by ambelkac          #+#    #+#             */
-/*   Updated: 2021/12/22 18:08:50 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/04 17:39:57 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ typedef struct s_philo_general
 	pthread_mutex_t	display;
 	pthread_mutex_t	*timestamp;
 	pthread_mutex_t	*forks;
+	pthread_mutex_t	*eating;
 }				t_pgen;
 
 typedef struct s_philo_data
@@ -39,6 +40,8 @@ typedef struct s_philo_data
 	pthread_mutex_t	display;
 	pthread_mutex_t	time;
 	pthread_mutex_t	timestamp;
+	pthread_mutex_t	eating;
+	int	is_eating;
 	int	nbr;
 	long int	time_stamp;
 	long int	time_to_die;
