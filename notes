@@ -1,0 +1,23 @@
+TODO :
+
+	- Timestamp functions returning elsaped time since call
+
+	- Individual philosophers structure
+
+	- Main thread looping death check
+
+	- Custom sleep function (looping usleep for 10ms)
+
+	- Offsetting thread start on odd or even philos (avoiding akward forks dispotition)
+
+	- Mutexes on variables :
+		- Time check
+		- Death
+		- Forks
+		- Timestamp print
+
+
+Try to deduce if each philo will survive the next step then custom sleep
+for the calculated time of death, lock display mutex and return
+
+NOTES :
