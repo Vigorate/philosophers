@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:56:17 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/04 19:18:36 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/08 18:38:56 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ void		custom_usleep(long int usec)
 	timestamp = get_elapsed_time() + usec;
 	while (get_elapsed_time() < timestamp)
 	{
-		usleep(1);
+		usleep(10);
 	}
 }
 
