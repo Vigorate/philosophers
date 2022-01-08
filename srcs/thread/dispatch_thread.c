@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:42:46 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/08 18:09:49 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/08 18:12:38 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -57,14 +57,14 @@ void	death_loop(t_pgen *data, t_pdata **pdata)
 	usleep(100);
 	while(1)
 	{
-		pthread_mutex_lock((pdata[i])->eating);
-		if (pdata[i]->is_eating)
-		{
-			pthread_mutex_unlock((pdata[i])->eating);
-			++i;
-			continue ;
-		}
-		pthread_mutex_unlock((pdata[i])->eating);
+		// pthread_mutex_lock((pdata[i])->eating);
+		// if (pdata[i]->is_eating)
+		// {
+		// 	pthread_mutex_unlock((pdata[i])->eating);
+		// 	++i;
+		// 	continue ;
+		// }
+		// pthread_mutex_unlock((pdata[i])->eating);
 		pthread_mutex_lock((pdata[i])->timestamp);
 		if (get_elapsed_time() - pdata[i]->time_stamp > data->time_to_die)
 		{
