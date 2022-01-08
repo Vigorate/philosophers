@@ -27,6 +27,6 @@ long int	get_elapsed_time(void)
 {
 	struct timeval	tp;
 
-		gettimeofday(&tp, NULL);
-		return ((tp.tv_sec * 1000000 + tp.tv_usec));
+	gettimeofday(&tp, NULL);
+	return ((tp.tv_sec * 1000000 + tp.tv_usec));
 }
