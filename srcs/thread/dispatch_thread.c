@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:42:46 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/08 18:12:38 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/12 19:03:56 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,24 +47,22 @@ t_pdata	*allocate_philo_data(t_pgen *data, int i)
 	return (pdata);
 }
 
-void	death_loop(t_pgen *data, t_pdata **pdata)
+void	death_loop(t_pgen *data, t_pdata **pdata, long int start_time)
 {
 	int	i;
-	long int	start_time;
 
 	i = 0;
-	start_time = get_elapsed_time();
 	usleep(100);
 	while(1)
 	{
-		// pthread_mutex_lock((pdata[i])->eating);
-		// if (pdata[i]->is_eating)
-		// {
-		// 	pthread_mutex_unlock((pdata[i])->eating);
-		// 	++i;
-		// 	continue ;
-		// }
-		// pthread_mutex_unlock((pdata[i])->eating);
+		pthread_mutex_lock((pdata[i])->eating);
+		if (pdata[i]->is_eating)
+		{
+			pthread_mutex_unlock((pdata[i])->eating);
+			++i;
+			continue ;
+		}
+		pthread_mutex_unlock((pdata[i])->eating);
 		pthread_mutex_lock((pdata[i])->timestamp);
 		if (get_elapsed_time() - pdata[i]->time_stamp > data->time_to_die)
 		{
@@ -98,11 +96,12 @@ int	dispatch_thread(t_pgen *data)
 	start_time = get_elapsed_time();
 	while (i < data->nbr_of_philo)
 	{
+		pdata[i]->start_time = start_time;
+		pdata[i]->time_stamp = start_time;
 		pthread_create(&(threads[i]), NULL, philo_job, pdata[i]);
 		++i;
 	}
-
-	death_loop(data, pdata);
+	death_loop(data, pdata, start_time);
 	// Loop on mutexed value of philo elasped time since last action
 	// Return on detected philo death
 	return (0);
