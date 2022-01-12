@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 14:36:29 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/12 19:00:19 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/13 00:14:27 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,32 +21,30 @@ void	display_status(t_pdata *pdata, char *msg)
 
 void	eating(t_pdata *pdata)
 {
-	pthread_mutex_lock(pdata->right);
-	display_status(pdata, "has taken a fork");
-
-
-	pthread_mutex_lock(pdata->left);
-	display_status(pdata, "has taken a fork");
-
-
+	if (pdata->nbr % 2)
+	{
+		pthread_mutex_lock(pdata->right);
+		display_status(pdata, "has taken a fork");
+		pthread_mutex_lock(pdata->left);
+		display_status(pdata, "has taken a fork");
+	}
+	else
+	{
+		pthread_mutex_lock(pdata->left);
+		display_status(pdata, "has taken a fork");
+		pthread_mutex_lock(pdata->right);
+		display_status(pdata, "has taken a fork");
+	}
 	display_status(pdata, "is eating");
-
-	pthread_mutex_lock(pdata->eating);
-	pdata->is_eating = 1;
-	pthread_mutex_unlock(pdata->eating);
-
-	custom_usleep(pdata->time_to_eat);
-
-	pthread_mutex_lock(pdata->eating);
-	pdata->is_eating = 0;
-	pthread_mutex_unlock(pdata->eating);
-
-	pthread_mutex_unlock(pdata->left);
-	pthread_mutex_unlock(pdata->right);
 
 	pthread_mutex_lock(pdata->timestamp);
 	pdata->time_stamp = get_elapsed_time();
 	pthread_mutex_unlock(pdata->timestamp);
+
+	custom_usleep(pdata->time_to_eat);
+
+	pthread_mutex_unlock(pdata->right);
+	pthread_mutex_unlock(pdata->left);
 }
 
 void	sleeping(t_pdata *pdata)
@@ -60,12 +58,8 @@ void	*philo_job(void *ptr)
 	t_pdata	*pdata;
 
 	pdata = (t_pdata *)ptr;
-//	pdata->start_time = get_elapsed_time();
-//	pdata->time_stamp = get_elapsed_time();
-//	if (!pdata->nbr % 2)
-//		usleep(10);
-
-	printf("start %d : %ld\n", pdata->nbr + 1, get_elapsed_time() - pdata->start_time);
+	if (!pdata->nbr % 2)
+		custom_usleep(10);
 
 	while (1)
 	{

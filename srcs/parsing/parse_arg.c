@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 12:31:30 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/08 17:29:56 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/12 19:23:18 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -70,5 +70,7 @@ t_pgen	*parse_arg(char **av, int ac)
 	if (!data)
 		return (NULL);
 	fill_general_data(av, ac, data);
+	if (data->nbr_of_philo > 200)
+		return (NULL);
 	return (data);
 }

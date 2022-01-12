@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:56:17 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/08 18:38:56 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/12 23:52:27 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,5 +28,5 @@ long int	get_elapsed_time(void)
 	struct timeval	tp;
 
 	gettimeofday(&tp, NULL);
-	return ((tp.tv_sec * 1000000 + tp.tv_usec));
+	return ((tp.tv_sec * 1000 + tp.tv_usec / 1000));
 }
