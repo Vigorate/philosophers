@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:42:46 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/18 23:16:24 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/19 00:41:04 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,10 @@ void	death_loop(t_pgen *data, t_pdata **pdata, long int start_time)
 		{
 			pthread_mutex_lock((pdata[i])->m_eat_count);
 			if (pdata[i]->must_eat == 0)
+			{
 				eat_count++;
+				pdata[i]->must_eat = -1;
+			}
 			pthread_mutex_unlock((pdata[i])->m_eat_count);
 			if (eat_count >= data->nbr_of_philo)
 			{
