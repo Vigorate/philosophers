@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:42:46 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/19 00:41:04 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/19 00:56:30 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,10 @@ t_pdata	*allocate_philo_data(t_pgen *data, int i)
 	pdata->display = &data->display;
 	pdata->timestamp = &(data->timestamp[i]);
 	pdata->m_interrupt = &(data->m_interrupt);
+	if (data->nbr_of_philo == 1)
+		pdata->solo_philo = 1;
+	else
+		pdata->solo_philo = 0;
 	if (data->must_eat > 0)
 		pdata->m_eat_count = &(data->m_eat_count[i]);
 	else

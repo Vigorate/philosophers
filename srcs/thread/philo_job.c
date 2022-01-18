@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 14:36:29 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/18 23:30:43 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/19 00:56:56 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,11 +63,27 @@ void	sleeping(t_pdata *pdata)
 	custom_usleep(pdata->time_to_sleep);
 }
 
+int solo_philo(t_pdata *pdata)
+{
+	if (pdata->solo_philo)
+	{
+		display_status(pdata, "has taken a fork");
+		while (1)
+		{
+			if (interrupt(1, pdata->m_interrupt))
+				return (1);
+		}
+	}
+	return (0);
+}
+
 void	*philo_job(void *ptr)
 {
 	t_pdata	*pdata;
 
 	pdata = (t_pdata *)ptr;
+	if (solo_philo(pdata))
+		return (NULL);
 	if (!pdata->nbr % 2)
 		custom_usleep(10);
 	while (1)
