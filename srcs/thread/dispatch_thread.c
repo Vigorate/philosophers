@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:42:46 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/18 20:25:08 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/18 21:57:22 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,6 +60,7 @@ t_pdata	*allocate_philo_data(t_pgen *data, int i)
 	pdata->display = &data->display;
 	pdata->timestamp = &(data->timestamp[i]);
 	pdata->m_interrupt = &(data->m_interrupt);
+	pdata->m_eat_count = &(data->m_eat_count[i]);
 	dispatch_forks(pdata, data, i);
 	return (pdata);
 }
@@ -67,22 +68,25 @@ t_pdata	*allocate_philo_data(t_pgen *data, int i)
 void	death_loop(t_pgen *data, t_pdata **pdata, long int start_time)
 {
 	int	i;
+	int	eat_count;
 
 	i = 0;
+	eat_count = 0;
 	while(1)
 	{
 		if (i == data->nbr_of_philo)
 			i = 0;
-		pthread_mutex_lock((pdata[i])->timestamp);
-		if (pdata[i]->time_stamp == -1)
+
+		pthread_mutex_lock((pdata[i])->m_eat_count);
+		if (pdata[i]->must_eat == 0)
+			eat_count++;
+		pthread_mutex_unlock((pdata[i])->m_eat_count);
+		if (eat_count == data->nbr_of_philo)
 		{
 			interrupt(0, &data->m_interrupt);
-			pthread_mutex_unlock((pdata[i])->timestamp);
-			pthread_mutex_lock((pdata[i]->display));
-			pthread_mutex_unlock((pdata[i]->display));
-			printf("Must eat reached\n");
 			return ;
 		}
+		pthread_mutex_lock((pdata[i])->timestamp);
 		if (get_elapsed_time() - pdata[i]->time_stamp > data->time_to_die)
 		{
 			interrupt(0, &data->m_interrupt);
@@ -123,7 +127,5 @@ int	dispatch_thread(t_pgen *data)
 	}
 	death_loop(data, pdata, start_time);
 	clean_exit(data, pdata, threads);
-	// Loop on mutexed value of philo elasped time since last action
-	// Return on detected philo death
 	return (0);
 }

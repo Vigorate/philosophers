@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 12:31:30 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/18 18:12:05 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/18 21:54:27 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,8 @@ void	allocate_forks(t_pgen *data)
 		if (pthread_mutex_init(&(data->forks[i]), NULL))
 			return ;
 		if (pthread_mutex_init(&(data->timestamp[i]), NULL))
+			return ;
+		if (pthread_mutex_init(&(data->m_eat_count[i]), NULL))
 			return ;
 		++i;
 	}

@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 14:36:29 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/18 19:33:22 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/18 21:55:22 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,8 +45,10 @@ void	eating(t_pdata *pdata)
 
 	custom_usleep(pdata->time_to_eat);
 
+	pthread_mutex_lock(pdata->m_eat_count);
 	if (pdata->must_eat != -1)
 		--(pdata->must_eat);
+	pthread_mutex_unlock(pdata->m_eat_count);
 
 	pthread_mutex_unlock(pdata->right);
 	pthread_mutex_unlock(pdata->left);
@@ -72,9 +74,6 @@ void	*philo_job(void *ptr)
 			return (NULL);
 		if (!pdata->must_eat)
 		{
-			pthread_mutex_lock(pdata->timestamp);
-			pdata->time_stamp = -1;
-			pthread_mutex_unlock(pdata->timestamp);
 			interrupt(0, pdata->m_interrupt);
 			return (NULL);
 		}

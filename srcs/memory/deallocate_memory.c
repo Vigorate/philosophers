@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/12/04 15:31:08 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/18 18:20:59 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/18 21:58:37 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,8 +27,10 @@ void	clean_exit(t_pgen *data, t_pdata **pdata, pthread_t *threads)
 	{
 		pthread_mutex_destroy(&(data->timestamp)[i]);
 		pthread_mutex_destroy(&(data->forks)[i]);
+		pthread_mutex_destroy(&(data->m_eat_count)[i]);
 		++i;
 	}
+	pthread_mutex_destroy(&data->m_interrupt);
 	pthread_mutex_destroy(&data->display);
 	exit(0);
 }
