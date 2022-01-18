@@ -6,11 +6,29 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:42:46 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/13 00:14:42 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/18 20:25:08 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/philosophers.h"
+
+int		interrupt(int type, pthread_mutex_t *m_value)
+{
+	static int is_interrupt = 0;
+
+	pthread_mutex_lock(m_value);
+	if (type == 1 && is_interrupt == 1)
+	{
+		pthread_mutex_unlock(m_value);
+		return (1);
+	}
+	if (type == 0)
+	{
+		is_interrupt = 1;
+	}
+	pthread_mutex_unlock(m_value);
+	return (0);
+}
 
 void	dispatch_forks(t_pdata *pdata, t_pgen *data, int i)
 {
@@ -41,8 +59,7 @@ t_pdata	*allocate_philo_data(t_pgen *data, int i)
 	pdata->time_to_sleep = data->time_to_sleep;
 	pdata->display = &data->display;
 	pdata->timestamp = &(data->timestamp[i]);
-	pdata->eating = &(data->eating[i]);
-	pdata->is_eating = 0;
+	pdata->m_interrupt = &(data->m_interrupt);
 	dispatch_forks(pdata, data, i);
 	return (pdata);
 }
@@ -57,10 +74,22 @@ void	death_loop(t_pgen *data, t_pdata **pdata, long int start_time)
 		if (i == data->nbr_of_philo)
 			i = 0;
 		pthread_mutex_lock((pdata[i])->timestamp);
+		if (pdata[i]->time_stamp == -1)
+		{
+			interrupt(0, &data->m_interrupt);
+			pthread_mutex_unlock((pdata[i])->timestamp);
+			pthread_mutex_lock((pdata[i]->display));
+			pthread_mutex_unlock((pdata[i]->display));
+			printf("Must eat reached\n");
+			return ;
+		}
 		if (get_elapsed_time() - pdata[i]->time_stamp > data->time_to_die)
 		{
-			pthread_mutex_lock(&(data->display));
+			interrupt(0, &data->m_interrupt);
+			pthread_mutex_unlock((pdata[i])->timestamp);
+			pthread_mutex_lock((pdata[i]->display));
 			printf("%ld %d died\n", get_elapsed_time() - start_time, i + 1);
+			pthread_mutex_unlock((pdata[i]->display));
 			return ;
 		}
 		pthread_mutex_unlock((pdata[i])->timestamp);
@@ -93,6 +122,7 @@ int	dispatch_thread(t_pgen *data)
 		++i;
 	}
 	death_loop(data, pdata, start_time);
+	clean_exit(data, pdata, threads);
 	// Loop on mutexed value of philo elasped time since last action
 	// Return on detected philo death
 	return (0);

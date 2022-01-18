@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 14:36:29 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/13 00:14:27 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/18 19:33:22 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 
 void	display_status(t_pdata *pdata, char *msg)
 {
+	if (interrupt(1, pdata->m_interrupt))
+		return ;
 	pthread_mutex_lock(pdata->display);
 	printf("%ld %d %s\n", get_elapsed_time() - pdata->start_time, pdata->nbr + 1, msg);
 	pthread_mutex_unlock(pdata->display);
@@ -43,6 +45,9 @@ void	eating(t_pdata *pdata)
 
 	custom_usleep(pdata->time_to_eat);
 
+	if (pdata->must_eat != -1)
+		--(pdata->must_eat);
+
 	pthread_mutex_unlock(pdata->right);
 	pthread_mutex_unlock(pdata->left);
 }
@@ -60,12 +65,25 @@ void	*philo_job(void *ptr)
 	pdata = (t_pdata *)ptr;
 	if (!pdata->nbr % 2)
 		custom_usleep(10);
-
 	while (1)
 	{
 		eating(pdata);
+		if (interrupt(1, pdata->m_interrupt))
+			return (NULL);
+		if (!pdata->must_eat)
+		{
+			pthread_mutex_lock(pdata->timestamp);
+			pdata->time_stamp = -1;
+			pthread_mutex_unlock(pdata->timestamp);
+			interrupt(0, pdata->m_interrupt);
+			return (NULL);
+		}
 		sleeping(pdata);
+		if (interrupt(1, pdata->m_interrupt))
+			return (NULL);
 		display_status(pdata, "is thinking");
+		if (interrupt(1, pdata->m_interrupt))
+			return (NULL);
 	}
-	return (0);
+	return (NULL);
 }

@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 12:33:18 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/13 00:14:36 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/18 18:16:19 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct s_philo_general
 	long int	time_to_sleep;
 	int	must_eat;
 	pthread_mutex_t	display;
+	pthread_mutex_t m_interrupt;
 	pthread_mutex_t	timestamp[200];
 	pthread_mutex_t	forks[200];
 }				t_pgen;
@@ -37,7 +38,7 @@ typedef struct s_philo_data
 	pthread_mutex_t *right;
 	pthread_mutex_t	*display;
 	pthread_mutex_t	*timestamp;
-	int	is_eating;
+	pthread_mutex_t *m_interrupt;
 	int	nbr;
 	long int	start_time;
 	long int	time_stamp;
@@ -55,5 +56,7 @@ long int	get_elapsed_time(void);
 int	is_number(char const *str);
 t_pgen	*parse_arg(char **av, int ac);
 int	ft_atoi(const char *str);
+void	clean_exit(t_pgen *data, t_pdata **pdata, pthread_t *threads);
+int		interrupt(int type, pthread_mutex_t *m_value);
 
 #endif
