@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: ambelkac <ambelkac@student.42.fr>          +#+  +:+       +#+        */
+/*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 12:30:10 by ambelkac          #+#    #+#             */
-/*   Updated: 2021/12/07 18:01:10 by ambelkac         ###   ########.fr       */
+/*   Updated: 2022/01/18 22:40:11 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ int	main(int ac, char **av)
 	data = parse_arg(av, ac);
 	if (!data)
 		return (1);
-	display_general_data(data);
+//	display_general_data(data);
 	dispatch_thread(data);
 	return (0);
 }
