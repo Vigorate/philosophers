@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 14:36:29 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/18 21:55:22 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/18 22:27:35 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,11 +72,6 @@ void	*philo_job(void *ptr)
 		eating(pdata);
 		if (interrupt(1, pdata->m_interrupt))
 			return (NULL);
-		if (!pdata->must_eat)
-		{
-			interrupt(0, pdata->m_interrupt);
-			return (NULL);
-		}
 		sleeping(pdata);
 		if (interrupt(1, pdata->m_interrupt))
 			return (NULL);
