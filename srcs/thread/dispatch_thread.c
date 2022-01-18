@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:42:46 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/18 22:43:48 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/18 23:16:24 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,10 @@ t_pdata	*allocate_philo_data(t_pgen *data, int i)
 	pdata->display = &data->display;
 	pdata->timestamp = &(data->timestamp[i]);
 	pdata->m_interrupt = &(data->m_interrupt);
-	pdata->m_eat_count = &(data->m_eat_count[i]);
+	if (data->must_eat > 0)
+		pdata->m_eat_count = &(data->m_eat_count[i]);
+	else
+		pdata->m_eat_count = NULL;
 	dispatch_forks(pdata, data, i);
 	return (pdata);
 }
@@ -76,15 +79,17 @@ void	death_loop(t_pgen *data, t_pdata **pdata, long int start_time)
 	{
 		if (i == data->nbr_of_philo)
 			i = 0;
-
-		pthread_mutex_lock((pdata[i])->m_eat_count);
-		if (pdata[i]->must_eat == 0)
-			eat_count++;
-		pthread_mutex_unlock((pdata[i])->m_eat_count);
-		if (eat_count >= data->nbr_of_philo)
+		if (data->must_eat > 0)
 		{
-			interrupt(0, &data->m_interrupt);
-			return ;
+			pthread_mutex_lock((pdata[i])->m_eat_count);
+			if (pdata[i]->must_eat == 0)
+				eat_count++;
+			pthread_mutex_unlock((pdata[i])->m_eat_count);
+			if (eat_count >= data->nbr_of_philo)
+			{
+				interrupt(0, &data->m_interrupt);
+				return;
+			}
 		}
 		pthread_mutex_lock((pdata[i])->timestamp);
 		if (get_elapsed_time() - pdata[i]->time_stamp > data->time_to_die)

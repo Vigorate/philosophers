@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 14:36:29 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/18 22:43:35 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/18 23:30:43 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,16 +25,16 @@ void	eating(t_pdata *pdata)
 {
 	if (pdata->nbr % 2)
 	{
-		pthread_mutex_lock(pdata->right);
-		display_status(pdata, "has taken a fork");
 		pthread_mutex_lock(pdata->left);
+		display_status(pdata, "has taken a fork");
+		pthread_mutex_lock(pdata->right);
 		display_status(pdata, "has taken a fork");
 	}
 	else
 	{
-		pthread_mutex_lock(pdata->left);
-		display_status(pdata, "has taken a fork");
 		pthread_mutex_lock(pdata->right);
+		display_status(pdata, "has taken a fork");
+		pthread_mutex_lock(pdata->left);
 		display_status(pdata, "has taken a fork");
 	}
 	display_status(pdata, "is eating");
@@ -45,13 +45,16 @@ void	eating(t_pdata *pdata)
 
 	custom_usleep(pdata->time_to_eat);
 
-	pthread_mutex_lock(pdata->m_eat_count);
-	if (pdata->must_eat > 0)
-		--(pdata->must_eat);
-	pthread_mutex_unlock(pdata->m_eat_count);
-
 	pthread_mutex_unlock(pdata->right);
 	pthread_mutex_unlock(pdata->left);
+
+	if (pdata->m_eat_count)
+	{
+		pthread_mutex_lock(pdata->m_eat_count);
+		if (pdata->must_eat > 0)
+			--(pdata->must_eat);
+		pthread_mutex_unlock(pdata->m_eat_count);
+	}	
 }
 
 void	sleeping(t_pdata *pdata)
