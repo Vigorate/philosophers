@@ -6,13 +6,13 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:56:17 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/12 23:52:27 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/19 16:50:10 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/philosophers.h"
 
-void		custom_usleep(long int usec)
+void	custom_usleep(long int usec)
 {
 	long int	timestamp;
 

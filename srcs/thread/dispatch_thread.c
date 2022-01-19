@@ -6,15 +6,15 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 13:42:46 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/19 00:56:30 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/19 16:56:13 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/philosophers.h"
 
-int		interrupt(int type, pthread_mutex_t *m_value)
+int	interrupt(int type, pthread_mutex_t *m_value)
 {
-	static int is_interrupt = 0;
+	static int	is_interrupt = 0;
 
 	pthread_mutex_lock(m_value);
 	if (type == 1 && is_interrupt == 1)
@@ -32,44 +32,33 @@ int		interrupt(int type, pthread_mutex_t *m_value)
 
 void	dispatch_forks(t_pdata *pdata, t_pgen *data, int i)
 {
-	if (!i)
+	if (i == data->nbr_of_philo - 1)
 	{
-		pdata->right = &(data->forks[i]);
 		pdata->left = &(data->forks[data->nbr_of_philo - 1]);
+		pdata->right = &(data->forks[0]);
 	}
 	else
 	{
-		pdata->right = &(data->forks[i]);
-		pdata->left = &(data->forks[i - 1]);
+		pdata->left = &(data->forks[i]);
+		pdata->right = &(data->forks[i + 1]);
 	}
 }
 
-t_pdata	*allocate_philo_data(t_pgen *data, int i)
+int	eat_count_check(t_pgen *data, t_pdata *pdata, int *eat_count)
 {
-	t_pdata	*pdata;
-
-	pdata = malloc(sizeof(t_pdata));
-	if (!pdata)
-		return (NULL);
-	pdata->nbr = i;
-	pdata->time_stamp = 0;
-	pdata->must_eat = data->must_eat;
-	pdata->time_to_die = data->time_to_die;
-	pdata->time_to_eat = data->time_to_eat;
-	pdata->time_to_sleep = data->time_to_sleep;
-	pdata->display = &data->display;
-	pdata->timestamp = &(data->timestamp[i]);
-	pdata->m_interrupt = &(data->m_interrupt);
-	if (data->nbr_of_philo == 1)
-		pdata->solo_philo = 1;
-	else
-		pdata->solo_philo = 0;
-	if (data->must_eat > 0)
-		pdata->m_eat_count = &(data->m_eat_count[i]);
-	else
-		pdata->m_eat_count = NULL;
-	dispatch_forks(pdata, data, i);
-	return (pdata);
+	pthread_mutex_lock(pdata->m_eat_count);
+	if (pdata->must_eat == 0)
+	{
+		(*eat_count)++;
+		pdata->must_eat = -1;
+	}
+	pthread_mutex_unlock(pdata->m_eat_count);
+	if ((*eat_count) >= data->nbr_of_philo)
+	{
+		interrupt(0, &data->m_interrupt);
+		return (1);
+	}
+	return (0);
 }
 
 void	death_loop(t_pgen *data, t_pdata **pdata, long int start_time)
@@ -79,25 +68,12 @@ void	death_loop(t_pgen *data, t_pdata **pdata, long int start_time)
 
 	i = 0;
 	eat_count = 0;
-	while(1)
+	while (1)
 	{
 		if (i == data->nbr_of_philo)
 			i = 0;
-		if (data->must_eat > 0)
-		{
-			pthread_mutex_lock((pdata[i])->m_eat_count);
-			if (pdata[i]->must_eat == 0)
-			{
-				eat_count++;
-				pdata[i]->must_eat = -1;
-			}
-			pthread_mutex_unlock((pdata[i])->m_eat_count);
-			if (eat_count >= data->nbr_of_philo)
-			{
-				interrupt(0, &data->m_interrupt);
-				return;
-			}
-		}
+		if (data->must_eat > 0 && eat_count_check(data, pdata[i], &eat_count))
+			return ;
 		pthread_mutex_lock((pdata[i])->timestamp);
 		if (get_elapsed_time() - pdata[i]->time_stamp > data->time_to_die)
 		{
@@ -115,19 +91,16 @@ void	death_loop(t_pgen *data, t_pdata **pdata, long int start_time)
 
 int	dispatch_thread(t_pgen *data)
 {
-	pthread_t	threads[data->nbr_of_philo];
+	pthread_t	*threads;
 	int			i;
-	t_pdata		*pdata[data->nbr_of_philo];
+	t_pdata		**pdata;
 	long int	start_time;
 
 	i = 0;
-	while (i < data->nbr_of_philo)
-	{
-		pdata[i] = allocate_philo_data(data, i);
-		if (!pdata[i])
-			return (1);
-		++i;
-	}
+	pdata = malloc(sizeof(t_pdata *) * data->nbr_of_philo);
+	threads = malloc(sizeof(pthread_t) * data->nbr_of_philo);
+	if (!pdata || !threads || allocate_tab_philo_data(pdata, data))
+		return (1);
 	i = 0;
 	start_time = get_elapsed_time();
 	while (i < data->nbr_of_philo)
