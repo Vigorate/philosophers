@@ -6,7 +6,7 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 12:33:18 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/19 16:54:55 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/23 15:51:51 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,6 +18,7 @@
 # include <stdlib.h>
 # include <pthread.h>
 # include <sys/time.h>
+# include <limits.h>
 
 typedef struct s_philo_general
 {

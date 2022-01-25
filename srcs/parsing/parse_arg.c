@@ -6,11 +6,27 @@
 /*   By: amine <amine@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2021/11/30 12:31:30 by ambelkac          #+#    #+#             */
-/*   Updated: 2022/01/19 16:50:18 by amine            ###   ########.fr       */
+/*   Updated: 2022/01/23 18:01:13 by amine            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "../../includes/philosophers.h"
+
+int	check_args(t_pgen *data)
+{
+	if (data->time_to_die > INT_MAX ||
+	data->time_to_sleep > INT_MAX ||
+	data->time_to_eat > INT_MAX)
+		return (1);
+	if (data->time_to_die <= 0 ||
+	data->time_to_sleep <= 0 ||
+	data->time_to_eat <= 0 ||
+	(data->nbr_of_philo <= 0 || data->nbr_of_philo > 200))
+		return (1);
+	if (data->must_eat != -1 && data->must_eat <= 0)
+		return (1);
+	return (0);
+}
 
 void	allocate_forks(t_pgen *data)
 {
@@ -41,6 +57,8 @@ int	fill_general_data(char **av, int ac, t_pgen *data)
 		data->must_eat = ft_atoi(av[5]);
 	else
 		data->must_eat = -1;
+	if (check_args(data))
+		return (1);
 	allocate_forks(data);
 	return (0);
 }
@@ -50,7 +68,7 @@ int	is_arg_only_numbers(char **av, int ac)
 	int	i;
 
 	i = 1;
-	while (ac < i)
+	while (ac > i)
 	{
 		if (is_number(av[i]))
 			return (1);
@@ -70,8 +88,7 @@ t_pgen	*parse_arg(char **av, int ac)
 	data = malloc(sizeof(t_pgen));
 	if (!data)
 		return (NULL);
-	fill_general_data(av, ac, data);
-	if (data->nbr_of_philo > 200)
+	if (fill_general_data(av, ac, data))
 		return (NULL);
 	return (data);
 }
